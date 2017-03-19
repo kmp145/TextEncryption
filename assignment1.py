@@ -9,34 +9,27 @@ def generateKey():
 	return key
 
 def importKey():
-	try:
 		FILE = open('secerateKey.txt','r')
 		key = FILE.read()
 		return key
-	except:
-		while 1:
-			print("WARNING: When decrypting a message you need the same key\
- used to encrypt it!")
-			c1 = raw_input("No valid key found!\nWould you like to \
-generate a new one?(y/n)")
-			if c1.upper() == 'Y':
-				key = generateKey()
-				return key
-			elif c1.upper() == 'N':
-				print("Returning to preivous menu...")
-				return "error1"
-			else:
-				print("Invalid choice")
+		
 
 def encrypt():
 	while 1:
-		choice = raw_input("ENCRYPTION MENU:\n 1)Import an existing key \n \
-2)Generate a new key\n 99)Go Back\n")
+		choice = raw_input("ENCRYPTION MENU:\n 1)Import an existing key \n 2)Generate a new key\n 99)Go Back\n")
 		if  choice == "1":
-			key = importKey()
-			if key == "error1":
-				return
-			break
+			try:
+				key = importKey()
+				break
+			except:
+				c1 = raw_input("No valid key found!\nWould you like to generate a new one?(y/n)")
+				if c1.upper() == 'Y':
+					key = generateKey()
+					break
+				elif c1.upper() == 'N':
+					print("Returning to preivous menu...")
+				else:
+					print("Invalid choice returning to previous menu...")
 		elif choice == "2":
 			print ("Generating...")
 			key = generateKey()
@@ -46,7 +39,7 @@ def encrypt():
 			return
 		else:
 			print ("Invalid choice!")
-		pass
+			pass
 	plainTextmsg = raw_input("Input the message you would like to encrypt:\t")
 	encryptor = Fernet(key)
 	cipherText = encryptor.encrypt(plainTextmsg)
@@ -64,7 +57,11 @@ def decrypt():
 	except:
 		print("No valid cipher text found returning to main menu...")
 		return
-	key = importKey()
+	try:
+		key = importKey()
+	except:
+		print("No valid key found returning to main menu...")
+		return
 	decryptor = Fernet(key)
 	plainText = decryptor.decrypt(cipherText)
 	print("Message successfuully decrypted:\t"+plainText)
